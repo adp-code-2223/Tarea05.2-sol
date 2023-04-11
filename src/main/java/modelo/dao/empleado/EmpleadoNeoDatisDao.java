@@ -4,7 +4,6 @@
  */
 package modelo.dao.empleado;
 
-
 import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
@@ -13,23 +12,26 @@ import org.neodatis.odb.ODB;
 import org.neodatis.odb.ODBRuntimeException;
 import org.neodatis.odb.OID;
 import org.neodatis.odb.ObjectValues;
+import org.neodatis.odb.Objects;
 import org.neodatis.odb.Values;
 import org.neodatis.odb.core.oid.OIDFactory;
+import org.neodatis.odb.core.query.IQuery;
 import org.neodatis.odb.core.query.IValuesQuery;
+import org.neodatis.odb.core.query.criteria.Where;
+import org.neodatis.odb.impl.core.query.criteria.CriteriaQuery;
 import org.neodatis.odb.impl.core.query.values.ValuesCriteriaQuery;
 
 import modelo.Empleado;
 import modelo.dao.AbstractGenericDao;
 import modelo.exceptions.InstanceNotFoundException;
 import util.ConnectionFactory;
+import util.Utils;
 
 /**
  *
  * @author mfernandez
  */
-public class EmpleadoNeoDatisDao 
-extends AbstractGenericDao<Empleado> 
-implements IEmpleadoDao {
+public class EmpleadoNeoDatisDao extends AbstractGenericDao<Empleado> implements IEmpleadoDao {
 
 	private ODB dataSource;
 
@@ -40,20 +42,20 @@ implements IEmpleadoDao {
 	@Override
 	public long create(Empleado entity) {
 		OID oid = null;
-		long oidlong =-1;
+		long oidlong = -1;
 		try {
-			
+
 			oid = this.dataSource.store(entity);
 			this.dataSource.commit();
 
 		} catch (Exception ex) {
-			
+
 			System.err.println("Ha ocurrido una excepción: " + ex.getMessage());
 			this.dataSource.rollback();
 			oid = null;
 		}
-		if(oid!=null) {
-			oidlong= oid.getObjectId();
+		if (oid != null) {
+			oidlong = oid.getObjectId();
 		}
 		return oidlong;
 	}
@@ -65,13 +67,12 @@ implements IEmpleadoDao {
 			OID oid = OIDFactory.buildObjectOID(id);
 			empleado = (Empleado) this.dataSource.getObjectFromId(oid);
 		} catch (ODBRuntimeException ex) {
-		
+
 			System.err.println("Ha ocurrido una excepción: " + ex.getMessage());
 //Suponemos que no lo encuentra
 			throw new InstanceNotFoundException(id, getEntityClass());
-		}
-		catch(Exception ex) {
-			
+		} catch (Exception ex) {
+
 			System.err.println("Ha ocurrido una excepción: " + ex.getMessage());
 
 		}
@@ -85,60 +86,66 @@ implements IEmpleadoDao {
 			this.dataSource.store(entity);
 			this.dataSource.commit();
 			exito = true;
-		} catch (Exception ex) {			
+		} catch (Exception ex) {
 			System.err.println("Ha ocurrido una excepción: " + ex.getMessage());
 			this.dataSource.rollback();
-			
 
 		}
-		return exito;																	// nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+		return exito; // nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
 	}
-
-
-
-
-
-	
 
 	@Override
 	public float findAvgSalary() {
-		BigDecimal media =BigDecimal.ZERO;
+		BigDecimal media = BigDecimal.ZERO;
 		ValuesCriteriaQuery valuesCriteriaQuery = new ValuesCriteriaQuery(Empleado.class);
 		IValuesQuery ivc = valuesCriteriaQuery.avg("sal");
 		Values values = this.dataSource.getValues(ivc);
-		while(values.hasNext()) {
-			ObjectValues objectValues = (ObjectValues) values.next();			
-			media = (BigDecimal) objectValues.getByIndex(0); 
-			
+		while (values.hasNext()) {
+			ObjectValues objectValues = (ObjectValues) values.next();
+			media = (BigDecimal) objectValues.getByIndex(0);
+
 		}
 		return media.floatValue();
 	}
 
-	
-
-
 	@Override
 	public boolean delete(Empleado entity) {
-		// TODO Auto-generated method stub
-		return false;
+		boolean exito = false;
+		try {
+			this.dataSource.delete(entity);
+			this.dataSource.commit();
+			exito = true;
+		} catch (Exception ex) {
+			System.err.println("Ha ocurrido una excepción: " + ex.getMessage());
+			this.dataSource.rollback();
+
+		}
+		return exito;
 	}
 
 	@Override
 	public List<Empleado> findAll() {
-		// TODO Auto-generated method stub
-		return null;
+
+		CriteriaQuery query = new CriteriaQuery(Empleado.class);
+		IQuery iquery = query.orderByAsc("empno");
+		Objects<Empleado> empleados = dataSource.getObjects(iquery);
+		return Utils.toList(empleados);
 	}
 
 	@Override
-	public List<Empleado> findByJob(String job) {
-		// TODO Auto-generated method stub
-		return null;
+	public List<Empleado> findByJob(String puesto) {
+		CriteriaQuery query = new CriteriaQuery(Empleado.class, 
+				Where.equal("job", puesto));
+		Objects<Empleado> empleados = dataSource.getObjects(query);
+		return Utils.toList(empleados);
 	}
 
 	@Override
 	public boolean exists(Integer empno) {
-		// TODO Auto-generated method stub
-		return false;
+		CriteriaQuery query = new CriteriaQuery(Empleado.class, 
+				Where.equal("empno", empno));
+		Objects<Empleado> empleados = dataSource.getObjects(query);
+		return (empleados.size()==1);
 	}
 
 	@Override
@@ -146,7 +153,5 @@ implements IEmpleadoDao {
 		// TODO Auto-generated method stub
 		return null;
 	}
-	
-	
 
 }

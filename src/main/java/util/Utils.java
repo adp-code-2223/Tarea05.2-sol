@@ -17,7 +17,7 @@ public class Utils {
 	}
 
 	// https://docs.oracle.com/javase/tutorial/java/generics/genTypeInference.html#target_types
-	public static <E> List<E> toList(Objects<E> empObjects) {
+	public static  <E> List<E> toList(Objects<E> empObjects) {
 		List<E> empList = new ArrayList<>();
 		while (empObjects.hasNext()) {
 			E e = empObjects.next();
