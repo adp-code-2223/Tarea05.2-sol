@@ -17,6 +17,8 @@ import org.neodatis.odb.Values;
 import org.neodatis.odb.core.oid.OIDFactory;
 import org.neodatis.odb.core.query.IQuery;
 import org.neodatis.odb.core.query.IValuesQuery;
+import org.neodatis.odb.core.query.criteria.And;
+import org.neodatis.odb.core.query.criteria.ICriterion;
 import org.neodatis.odb.core.query.criteria.Where;
 import org.neodatis.odb.impl.core.query.criteria.CriteriaQuery;
 import org.neodatis.odb.impl.core.query.values.ValuesCriteriaQuery;
@@ -97,11 +99,17 @@ public class EmpleadoNeoDatisDao extends AbstractGenericDao<Empleado> implements
 	@Override
 	public float findAvgSalary() {
 		BigDecimal media = BigDecimal.ZERO;
-		ValuesCriteriaQuery valuesCriteriaQuery = new ValuesCriteriaQuery(Empleado.class);
+		
+		
+		ValuesCriteriaQuery valuesCriteriaQuery =
+				new ValuesCriteriaQuery(Empleado.class);
 		IValuesQuery ivc = valuesCriteriaQuery.avg("sal");
 		Values values = this.dataSource.getValues(ivc);
 		while (values.hasNext()) {
 			ObjectValues objectValues = (ObjectValues) values.next();
+			//System.out.println("object values de media: " +objectValues);
+			//La media se recupera con el alias sal 
+			//objectValues.getByAlias("sal");
 			media = (BigDecimal) objectValues.getByIndex(0);
 
 		}
@@ -150,8 +158,13 @@ public class EmpleadoNeoDatisDao extends AbstractGenericDao<Empleado> implements
 
 	@Override
 	public List<Empleado> findEmployeesByHireDate(Date from, Date to) {
-		// TODO Auto-generated method stub
-		return null;
+		ICriterion criterio = new And().add(Where.ge("hiredate", from)).
+				add(Where.le("hiredate", to));
+		IQuery query = new CriteriaQuery(Empleado.class, criterio);
+		
+		Objects<Empleado> empleados = dataSource.getObjects(query);
+		
+		return Utils.toList(empleados);
 	}
 
 }
