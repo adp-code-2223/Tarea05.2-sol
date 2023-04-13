@@ -49,6 +49,8 @@ public class EmpleadoNeoDatisDao extends AbstractGenericDao<Empleado> implements
 
 			oid = this.dataSource.store(entity);
 			this.dataSource.commit();
+			System.out.println("Creado un objeto "+
+			getEntityClass()+ " con oid: " + oid.getObjectId());
 
 		} catch (Exception ex) {
 
