@@ -5,6 +5,7 @@
 package modelo.dao.empleado;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.Date;
 import java.util.List;
 
@@ -44,7 +45,7 @@ public class EmpleadoNeoDatisDao extends AbstractGenericDao<Empleado> implements
 	@Override
 	public long create(Empleado entity) {
 		OID oid = null;
-		long oidlong = -1;
+		long oidlong = -1 ;
 		try {
 
 			oid = this.dataSource.store(entity);
@@ -102,7 +103,10 @@ public class EmpleadoNeoDatisDao extends AbstractGenericDao<Empleado> implements
 	public float findAvgSalary() {
 		BigDecimal media = BigDecimal.ZERO;
 		
+		//No resuelve el problema de java.lang.ArithmeticException: Rounding necessary
+		//Pero relacionado con esto: media.setScale(2, RoundingMode.HALF_UP);
 		
+	
 		ValuesCriteriaQuery valuesCriteriaQuery =
 				new ValuesCriteriaQuery(Empleado.class);
 		IValuesQuery ivc = valuesCriteriaQuery.avg("sal");
@@ -122,7 +126,8 @@ public class EmpleadoNeoDatisDao extends AbstractGenericDao<Empleado> implements
 	public boolean delete(Empleado entity) {
 		boolean exito = false;
 		try {
-			this.dataSource.delete(entity);
+			OID oid = this.dataSource.delete(entity);
+			System.out.println("El oid del objeto eliminado es: " + oid.getObjectId());
 			this.dataSource.commit();
 			exito = true;
 		} catch (Exception ex) {

@@ -24,6 +24,7 @@ public interface IServicioEmpleado {
 	
 	List<Empleado> findEmployeesByHireDate(int yearFrom, int monthFrom, int dayFrom, int yearTo, int monthTo, int dayTo);
 	
+	boolean exists(Integer empno);
 	
 }
 

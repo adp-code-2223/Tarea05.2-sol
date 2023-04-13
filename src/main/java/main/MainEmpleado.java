@@ -18,8 +18,35 @@ public class MainEmpleado {
 
 	public static void main(String[] args) {
 
+		
+
+		// createEmpleados();
+
+		listar();
+
+		float media = empleadoServicio.findAvgSalary();
+		System.out.println("La media del salario es: " + media);
+
+		filtrarPorFechas(2014, 8, 1, 2022, 1, 1);
+		filtrarPorEmpleo("Contable");
+
+		long oid = 6;
+		Empleado actualizado = updateEmpleado(oid);
+
+		if (actualizado != null) {
+			eliminarEmpleado(actualizado);
+		}
+		
+		listar();
+		
+
+		ConnectionFactory.closeConnection();
+
+	}
+	
+	private static void listar() {
 		List<Empleado> emps = new ArrayList<>();
-		createEmpleados();
+		
 
 		emps = empleadoServicio.findAll();
 
@@ -28,22 +55,6 @@ public class MainEmpleado {
 		for (Empleado empleado : emps) {
 			System.out.println("El empleado recuperado es: " + empleado);
 		}
-
-		float media = empleadoServicio.findAvgSalary();
-		System.out.println("La media del salario es: " + media);
-
-		filtrarPorFechas(2014, 8, 1, 2022, 1, 1);
-		filtrarPorEmpleo();
-
-		long oid = 11;
-		Empleado actualizado = updateEmpleado(oid);
-
-		if (actualizado != null) {
-			eliminarEmpleado(actualizado);
-		}
-		
-		ConnectionFactory.closeConnection();
-
 	}
 
 	private static void createEmpleados() {
@@ -68,12 +79,12 @@ public class MainEmpleado {
 
 			for (Empleado empleado : empleados) {
 				empleadoServicio.createEmpleado(empleado);
-			
+
 			}
 
-		} catch (DuplicateInstanceException e) {
+		} catch (Exception e) {
 			// TODO Auto-generated catch block
-			System.err.println("Se ha intentado guardar un empleado que ya existe: " + e.getMessage());
+			System.err.println("Ha ocurrido una exception " + e.getMessage());
 		}
 
 	}
@@ -102,8 +113,8 @@ public class MainEmpleado {
 		}
 	}
 
-	private static void filtrarPorEmpleo() {
-		List<Empleado> foundList = empleadoServicio.findByJob("Contable");
+	private static void filtrarPorEmpleo(String puesto) {
+		List<Empleado> foundList = empleadoServicio.findByJob(puesto);
 		for (Empleado empleado : foundList) {
 			System.out.println("El empleado recuperado by Job es: " + empleado);
 
@@ -113,7 +124,12 @@ public class MainEmpleado {
 	private static void eliminarEmpleado(Empleado empleado) {
 
 		empleadoServicio.deleteEmpleado(empleado);
-		System.out.println("El empleado eliminado es: " + empleado);
+		if (empleadoServicio.exists(empleado.getEmpno())) {
+			System.out.println("¡ERROR! No se ha eliminado el "
+					+ "empleado con empno: " + empleado.getEmpno());
+		} else {
+			System.out.println("El empleado eliminado es: " + empleado);
+		}
 
 	}
 

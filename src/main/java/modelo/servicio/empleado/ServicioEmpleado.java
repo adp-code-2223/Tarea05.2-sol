@@ -62,6 +62,11 @@ public class ServicioEmpleado implements IServicioEmpleado {
 		
 		return empleadoDao.findEmployeesByHireDate(from, to);
 	}
+
+	@Override
+	public boolean exists(Integer empno) {
+		return empleadoDao.exists(empno);
+	}
 	
 
 

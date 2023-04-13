@@ -27,6 +27,7 @@ public class ConnectionFactory {
 				String fichero = properties.getProperty(FILE_KEY);
 
 				connection = ODBFactory.open(fichero);
+				
 
 			} catch (FileNotFoundException e) {
 				System.err.println("Ha ocurrido una excepción FileNotFound: " + e.getMessage());
