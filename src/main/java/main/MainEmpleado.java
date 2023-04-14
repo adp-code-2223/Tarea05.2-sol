@@ -5,10 +5,9 @@ import java.util.Date;
 import java.util.List;
 
 import modelo.Empleado;
-import modelo.exceptions.DuplicateInstanceException;
 import modelo.exceptions.InstanceNotFoundException;
-import modelo.servicio.empleado.ServicioEmpleado;
 import modelo.servicio.empleado.IServicioEmpleado;
+import modelo.servicio.empleado.ServicioEmpleado;
 import util.ConnectionFactory;
 import util.Utils;
 
@@ -18,8 +17,7 @@ public class MainEmpleado {
 
 	public static void main(String[] args) {
 
-		
-
+		//Descomentar para ejecutar solo la primera vez
 		// createEmpleados();
 
 		listar();
@@ -36,17 +34,15 @@ public class MainEmpleado {
 		if (actualizado != null) {
 			eliminarEmpleado(actualizado);
 		}
-		
+
 		listar();
-		
 
 		ConnectionFactory.closeConnection();
 
 	}
-	
+
 	private static void listar() {
 		List<Empleado> emps = new ArrayList<>();
-		
 
 		emps = empleadoServicio.findAll();
 
@@ -124,9 +120,9 @@ public class MainEmpleado {
 	private static void eliminarEmpleado(Empleado empleado) {
 
 		empleadoServicio.deleteEmpleado(empleado);
+		//Este método no se pedía, pero se ha añadido como ejercicio de comprobación extra
 		if (empleadoServicio.exists(empleado.getEmpno())) {
-			System.out.println("¡ERROR! No se ha eliminado el "
-					+ "empleado con empno: " + empleado.getEmpno());
+			System.out.println("¡ERROR! No se ha eliminado el " + "empleado con empno: " + empleado.getEmpno());
 		} else {
 			System.out.println("El empleado eliminado es: " + empleado);
 		}
