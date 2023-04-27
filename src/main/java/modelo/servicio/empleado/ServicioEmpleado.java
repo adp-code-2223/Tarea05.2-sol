@@ -19,7 +19,7 @@ public class ServicioEmpleado implements IServicioEmpleado {
 	}
 
 	@Override
-	public long createEmpleado(Empleado empleado) throws DuplicateInstanceException {
+	public long createEmpleado(Empleado empleado) {
 
 			return empleadoDao.create(empleado);
 

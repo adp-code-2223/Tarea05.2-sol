@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import modelo.Departamento;
 import modelo.Empleado;
 import modelo.exceptions.InstanceNotFoundException;
 import modelo.servicio.empleado.IServicioEmpleado;
@@ -14,6 +15,7 @@ import util.Utils;
 public class MainEmpleado {
 
 	private static IServicioEmpleado empleadoServicio = new ServicioEmpleado();
+	
 
 	public static void main(String[] args) {
 
@@ -22,20 +24,20 @@ public class MainEmpleado {
 
 		listar();
 
-		float media = empleadoServicio.findAvgSalary();
-		System.out.println("La media del salario es: " + media);
-
-		filtrarPorFechas(2014, 8, 1, 2022, 1, 1);
-		filtrarPorEmpleo("Contable");
-
-		long oid = 6;
-		Empleado actualizado = updateEmpleado(oid);
-
-		if (actualizado != null) {
-			eliminarEmpleado(actualizado);
-		}
-
-		listar();
+//		float media = empleadoServicio.findAvgSalary();
+//		System.out.println("La media del salario es: " + media);
+//
+//		filtrarPorFechas(2014, 8, 1, 2022, 1, 1);
+//		filtrarPorEmpleo("Contable");
+//
+//		long oid = 6;
+//		Empleado actualizado = updateEmpleado(oid);
+//
+//		if (actualizado != null) {
+//			eliminarEmpleado(actualizado);
+//		}
+//
+//		listar();
 
 		ConnectionFactory.closeConnection();
 
@@ -53,6 +55,7 @@ public class MainEmpleado {
 		}
 	}
 
+	
 	private static void createEmpleados() {
 
 		List<Empleado> empleados = new ArrayList<>();
@@ -99,6 +102,10 @@ public class MainEmpleado {
 
 		return empleado;
 	}
+	
+	
+	
+
 
 	private static void filtrarPorFechas(int yearFrom, int monthFrom, int dayFrom, int yearTo, int monthTo, int dayTo) {
 		// month 0 is January

@@ -9,7 +9,7 @@ import modelo.exceptions.InstanceNotFoundException;
 
 public interface IServicioEmpleado {
 
-	public long createEmpleado(Empleado empleado) throws DuplicateInstanceException;
+	public long createEmpleado(Empleado empleado);
 	
 	public boolean deleteEmpleado(Empleado empleado);
 	public boolean updateEmpleado(Empleado empleado);
