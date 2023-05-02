@@ -28,23 +28,26 @@ public class CreateNewDeptDialog extends JDialog {
 	private JTextField textFieldNombreDept;
 	private JButton okButton;
 	private JLabel lblError;
-	private Departamento departamentoACrearOActualizar=null;
+	private Departamento departamentoACrearOActualizar = null;
 	
+	private JLabel lblId;
+
 	public Departamento getResult() {
 		return this.departamentoACrearOActualizar;
 	}
-	
-	public enum TIPO_EDICION {EDITAR, CREAR};
-	private TIPO_EDICION  tipo = TIPO_EDICION.CREAR;
+
+	public enum TIPO_EDICION {
+		EDITAR, CREAR
+	};
+
+	private TIPO_EDICION tipo = TIPO_EDICION.CREAR;
 	private JTextField textFieldDeptno;
-
-
 
 	/**
 	 * Create the dialog.
 	 */
 	public void initComponents() {
-		
+
 		setBounds(100, 100, 598, 300);
 		getContentPane().setLayout(new BorderLayout());
 		contentPanel.setBorder(new EmptyBorder(5, 5, 5, 5));
@@ -72,18 +75,18 @@ public class CreateNewDeptDialog extends JDialog {
 		textFieldNombreDept.setColumns(10);
 		textFieldNombreDept.setBounds(330, 35, 197, 23);
 		contentPanel.add(textFieldNombreDept);
-		
-		JLabel lblId = new JLabel("Dept. no");
+
+		 lblId= new JLabel("Dept. no");
 		lblId.setFont(new Font("Tahoma", Font.PLAIN, 14));
 		lblId.setBounds(39, 135, 140, 24);
 		contentPanel.add(lblId);
-		
+
 		textFieldDeptno = new JTextField();
 		textFieldDeptno.setFont(new Font("Tahoma", Font.PLAIN, 14));
 		textFieldDeptno.setColumns(10);
 		textFieldDeptno.setBounds(330, 136, 197, 23);
 		contentPanel.add(textFieldDeptno);
-		
+
 		lblError = new JLabel("Error label");
 		lblError.setForeground(new Color(255, 0, 0));
 		lblError.setFont(new Font("Tahoma", Font.PLAIN, 14));
@@ -104,9 +107,9 @@ public class CreateNewDeptDialog extends JDialog {
 		JButton cancelButton = new JButton("Cancel");
 		cancelButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				departamentoACrearOActualizar=null;
+				departamentoACrearOActualizar = null;
 				CreateNewDeptDialog.this.dispose();
-				
+
 			}
 		});
 		cancelButton.setActionCommand("Cancel");
@@ -117,18 +120,17 @@ public class CreateNewDeptDialog extends JDialog {
 			public void actionPerformed(ActionEvent e) {
 				if (!(textFieldUbicacion.getText().trim().equals(""))
 						&& !(textFieldNombreDept.getText().trim().equals(""))) {
-					if(departamentoACrearOActualizar==null) {
-						//Solo para creación
-						departamentoACrearOActualizar= new Departamento();
+					if (departamentoACrearOActualizar == null) {
+						// Solo para creación
+						departamentoACrearOActualizar = new Departamento();
 					}
 					departamentoACrearOActualizar.setDname(textFieldNombreDept.getText().trim());
 					departamentoACrearOActualizar.setLoc(textFieldUbicacion.getText().trim());
 					int deptno = getDeptnoFromTextField();
-					if(deptno!=-1) {
-					departamentoACrearOActualizar.setDeptno(deptno);
+					if (deptno != -1) {
+						departamentoACrearOActualizar.setDeptno(deptno);
 						CreateNewDeptDialog.this.dispose();
-					}
-					else {
+					} else {
 						lblError.setText("Introduzca un entero en número de departamento");
 						lblError.setVisible(true);
 					}
@@ -141,16 +143,21 @@ public class CreateNewDeptDialog extends JDialog {
 
 	}
 
-	public CreateNewDeptDialog(Window owner, String title, ModalityType modalityType, Departamento dept, TIPO_EDICION tipo) {
+	public CreateNewDeptDialog(Window owner, String title, ModalityType modalityType, Departamento dept,
+			TIPO_EDICION tipo) {
 		super(owner, title, modalityType);
 		initComponents();
-		departamentoACrearOActualizar=dept;
+		departamentoACrearOActualizar = dept;
 		this.tipo = tipo;
-		if(departamentoACrearOActualizar!=null) {
+		if (departamentoACrearOActualizar != null) {
 			textFieldNombreDept.setText(departamentoACrearOActualizar.getDname());
 			textFieldUbicacion.setText(departamentoACrearOActualizar.getLoc());
 			textFieldDeptno.setText(String.valueOf(departamentoACrearOActualizar.getDeptno()));
-			
+
+			// No permitir cambio de deptno en edición
+			textFieldDeptno.setVisible(tipo != TIPO_EDICION.EDITAR);
+			lblId.setVisible(tipo !=TIPO_EDICION.EDITAR);
+
 		}
 		lblError.setVisible(false);
 		this.setLocationRelativeTo(owner);
@@ -159,7 +166,7 @@ public class CreateNewDeptDialog extends JDialog {
 	public TIPO_EDICION getTipo() {
 		return tipo;
 	}
-	
+
 	private int getDeptnoFromTextField() {
 		int deptno = -1;
 		String textIntroducido = textFieldDeptno.getText().trim();
