@@ -16,15 +16,15 @@ public class Departamento implements java.io.Serializable {
 	private Integer deptno;
 	private String dname;
 	private String loc;
-	private Set emps = new HashSet(0);
+
 
 	public Departamento() {
 	}
 
-	public Departamento(String dname, String loc, Set emps) {
+	public Departamento(String dname, String loc) {
 		this.dname = dname;
 		this.loc = loc;
-		this.emps = emps;
+		
 	}
 
 	public Integer getDeptno() {
@@ -51,13 +51,7 @@ public class Departamento implements java.io.Serializable {
 		this.loc = loc;
 	}
 
-	public Set getEmps() {
-		return this.emps;
-	}
 
-	public void setEmps(Set emps) {
-		this.emps = emps;
-	}
 
 	@Override
 	public String toString() {

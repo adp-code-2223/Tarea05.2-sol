@@ -23,7 +23,7 @@ public interface IGenericDao<E> {
  * @param entity
  * @return el oid o -1 si hubo algún error
  */
-    public long create(E entity);
+    public boolean create(E entity);
 
     /***
      * Busca en el sistema de persistencia una entidad por su clave primaria
