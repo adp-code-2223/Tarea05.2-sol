@@ -5,6 +5,7 @@ import java.awt.EventQueue;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.List;
 
 import javax.swing.DefaultListModel;
 import javax.swing.JFrame;
@@ -37,7 +38,7 @@ public class SearchDepartmentWindow extends JFrame {
 
 	private IServicioDepartamento departamentoServicio;
 
-	private JTextField textField_deptNo;
+	private JTextField textField_searchTerm;
 
 	/**
 	 * Launch the application.
@@ -98,42 +99,46 @@ public class SearchDepartmentWindow extends JFrame {
 
 		panel.add(scrollPanel_in_JlistAllDepts);
 
-		textField_deptNo = new JTextField();
-		textField_deptNo.addActionListener(new ActionListener() {
+		textField_searchTerm = new JTextField();
+		textField_searchTerm.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				addMensaje(true, "Procesando...");
-				int deptno = getDeptnoFromTextField();
-				if (deptno <= 0) {
+				String searchTerm = textField_searchTerm.getText().trim();//getDeptnoFromTextField();
+				
+				if (searchTerm.equals("")) {
 
-					addMensaje(true, "El número de departamento debe ser mayor o igual que cero");
+					addMensaje(true, "Introduzca un término de búsqueda");
 				} else {
 					try {
-						Departamento dept = departamentoServicio.read(deptno);
-						if (dept != null) {
+						List<Departamento> departamentos = departamentoServicio.search(searchTerm);
+						if (departamentos.size()>0) {
 
-							addMensaje(true, "Se ha encontrado el departamento con id: " + deptno);
+							addMensaje(true, "Se han encontrado " + departamentos.size()+ " resultados");
 							DefaultListModel<Departamento> defModel = new DefaultListModel<>();
 
-							defModel.addElement(dept);
+							for (Departamento departamento : departamentos) {
+								defModel.addElement(departamento);
+							}
+							
 
 							JListAllDepts.setModel(defModel);
 						} else {
-							addMensaje(true, "El departamento con id: " + deptno + " es null");
+							addMensaje(true, "No se han encontrado resultados para  " + searchTerm);
 							clearJListModel();
 
 						}
-					} catch (InstanceNotFoundException e1) {
+					} catch (Exception e1) {
 
-						addMensaje(true, "El departamento con id: " + deptno + " no existe");
+						addMensaje(true, "Ha ocurrido una excepción y no se ha podido realizar la búsqueda: " + e1.getMessage());
 						clearJListModel();
 
 					}
 				}
 			}
 		});
-		textField_deptNo.setBounds(10, 56, 263, 34);
-		panel.add(textField_deptNo);
-		textField_deptNo.setColumns(10);
+		textField_searchTerm.setBounds(10, 56, 263, 34);
+		panel.add(textField_searchTerm);
+		textField_searchTerm.setColumns(10);
 
 		JLabel lbal_info_deptno = new JLabel("Introduzca el número de departamento");
 		lbal_info_deptno.setFont(new Font("Tahoma", Font.PLAIN, 16));
@@ -162,15 +167,5 @@ public class SearchDepartmentWindow extends JFrame {
 
 	}
 
-	private int getDeptnoFromTextField() {
-		int deptno = -1;
-		String textIntroducido = textField_deptNo.getText().trim();
-		try {
-			deptno = Integer.parseInt(textIntroducido);
-		} catch (Exception nfe) {
-			deptno = -1;
-		}
-		return deptno;
-	}
 
 }

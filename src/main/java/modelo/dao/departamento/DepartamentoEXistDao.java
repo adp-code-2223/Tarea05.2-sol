@@ -6,6 +6,7 @@ package modelo.dao.departamento;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -48,10 +49,8 @@ public class DepartamentoEXistDao extends AbstractGenericDao<Departamento> imple
 		Class cl;
 		try {
 			cl = Class.forName(dataSource.getDriver());
-
 			Database database = (Database) cl.newInstance();
 			database.setProperty("create-database", "true");
-
 			DatabaseManager.registerDatabase(database);
 
 		} catch (ClassNotFoundException e) {
@@ -197,6 +196,58 @@ public class DepartamentoEXistDao extends AbstractGenericDao<Departamento> imple
 	public boolean exists(Integer dept) {
 		// TODO Auto-generated method stub
 		return false;
+	}
+
+
+
+	@Override
+	public List<Departamento> search(String search) {
+		List<Departamento> departamentos = new ArrayList<Departamento>();
+		Departamento dept = null;
+		
+		try (Collection col = DatabaseManager.getCollection(dataSource.getUrl() + dataSource.getColeccionDepartamentos(),
+				dataSource.getUser(), dataSource.getPwd())) {
+
+			XQueryService xqs = (XQueryService) col.getService("XQueryService", "1.0");
+			xqs.setProperty("indent", "yes");
+
+			CompiledExpression compiled = xqs.compile("for $d in doc('departamentos.xml')//DEP_ROW[contains(lower-case(DNOMBRE), lower-case('"+search+"') )] return $d");
+			ResourceSet result = xqs.execute(compiled);
+
+			
+
+			ResourceIterator i = result.getIterator();
+			Resource res = null;
+			while (i.hasMoreResources()) {
+				try {
+					res = i.nextResource();
+
+					System.out.println(res.getContent().toString());
+
+					dept = stringNodeToDepartamento(res.getContent().toString());
+				
+					if(dept!=null) {
+						departamentos.add(dept);
+					}					
+					
+
+				} finally {
+					// dont forget to cleanup resources
+					try {
+						((EXistResource) res).freeResources();
+					} catch (XMLDBException xe) {
+						
+						xe.printStackTrace();
+					}
+				}
+			}
+
+		} catch (XMLDBException e) {
+			
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return departamentos;
 	}
 
 	

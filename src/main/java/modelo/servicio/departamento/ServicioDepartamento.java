@@ -1,5 +1,7 @@
 package modelo.servicio.departamento;
 
+import java.util.List;
+
 import modelo.Departamento;
 import modelo.dao.departamento.DepartamentoEXistDao;
 import modelo.dao.departamento.IDepartamentoDao;
@@ -18,6 +20,13 @@ public class ServicioDepartamento implements IServicioDepartamento {
 	@Override
 	public Departamento read(long deptno) throws InstanceNotFoundException {
 		return departamentoDao.read(deptno);
+	}
+
+
+
+	@Override
+	public List<Departamento> search(String term) {
+		return departamentoDao.search(term);
 	}
 
 }
